@@ -25,7 +25,7 @@ When a requirement is ambiguous, you enumerate all possible interpretations and 
 - Produce a structured spec document for each ticket
 - Flag any tickets that are under-specified and cannot proceed
 - Estimate scope complexity (S / M / L / XL)
-- Break the ticket into verifiable sub-tasks, if necessary
+- Break the ticket into **user verifiable** sub-tasks, only if appropriate and necessary. Do not create sub-tasks for the sake of sub-tasking
   - Number the sub-task sequencially, such as 01, 02, 03, ..., 99
 - Consolidate content from `docs/specs/<TICKET-ID>.md` into output, if applicable
 
