@@ -89,8 +89,8 @@ S | M | L | XL — <one-line rationale>
 frontend | backend | fullstack | auth | database | infra | ...
 
 ## Sub-Tasks
-  1. <SUB-TASK-SEQ> — <summary> [<status>]
-  2. <SUB-TASK-SEQ> — <summary> [<status>]
+  1. <SUB-TASK-SEQ> [<status>] — <summary>
+  2. <SUB-TASK-SEQ> [<status>] — <summary>
   ...
 ```
 

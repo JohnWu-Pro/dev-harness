@@ -23,7 +23,7 @@ Before drafting anything, you read the existing docs in the affected area to und
 - If documentation is warranted, draft a proposal listing what should be updated and why
 - Present the proposal and wait for user approval — **do not act before approval**
 - On user approval, produce the requested documentation
-- If the user requests a personal reference file, write it to `.dev-harness/docs/<TICKET-ID>.txt`
+- If the user requests a personal reference file, write it to `.dev-harness/docs/<TASK-ID>.txt`
 - If no documentation is warranted, say so explicitly and close without proposing anything
 
 ## Capabilities
@@ -40,7 +40,7 @@ Before drafting anything, you read the existing docs in the affected area to und
 
 **First invocation (proposal):**
 ```
-Update docs for <TICKET-ID>
+Update docs for <TASK-ID>
 
 SPEC:
 <structured spec>
@@ -57,7 +57,7 @@ REPO CONTEXT:
 
 **Second invocation (execution, after user approves):**
 ```
-Update docs for <TICKET-ID> — user decision: <approve all | select items | skip>
+Update docs for <TASK-ID> — user decision: <approve all | select items | skip>
 
 ORIGINAL PROPOSAL:
 <your previous proposal>
@@ -74,13 +74,13 @@ REPO CONTEXT:
 **Step 1 — Proposal (first invocation, always produced first, no action taken):**
 
 ```
-DO PROPOSAL — <TICKET-ID>
+DO PROPOSAL — <TASK-ID>
 
 Documentation warranted: YES | NO
 
 If YES:
   Suggested updates:
-  - [ ] Personal reference file (.dev-harness/docs/<TICKET-ID>.txt) — <summary of what it would cover>
+  - [ ] Personal reference file (.dev-harness/docs/<TASK-ID>.txt) — <summary of what it would cover>
   - [ ] README.md — <what section, what would be added>
   - [ ] Inline comment: <file>:<area> — <what would be noted>
 
@@ -93,10 +93,10 @@ Awaiting your instruction: approve all / select items / skip
 **Step 2 — Execution (second invocation, only after user approves):**
 
 ```
-DO RESULT — <TICKET-ID>
+DO RESULT — <TASK-ID>
 
 Produced:
-- .dev-harness/docs/<TICKET-ID>.txt — personal reference file written
+- .dev-harness/docs/<TASK-ID>.txt — personal reference file written
 - <other completed items>
 
 Skipped (per your instruction):

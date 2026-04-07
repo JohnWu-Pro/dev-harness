@@ -5,11 +5,12 @@ Run the full multi-agent pipeline for a ticket against a local repo.
 A ticket may be a "User Story", a "Technical Story", or a "Defect".
 
 **Usage:**
-* `/implement <ticket-id> <repo-name>`, OR
-* `/implement <task-id> <repo-name>`
+* `/implement <ticket-id>|<task-id> [<repo-name>]`
 
 **Example:**
+* `/implement MEMBER-003`, OR
 * `/implement MEMBER-003 pickleball-club`, OR
+* `/implement MEMBER-003.02`, OR
 * `/implement MEMBER-003.02 pickleball-club`
 
 ---
@@ -19,9 +20,9 @@ A ticket may be a "User Story", a "Technical Story", or a "Defect".
 Parse `$ARGUMENTS` to extract:
 - `ticketId` — the first argument (e.g. `MEMBER-003`)
 - `taskId` — the first argument (e.g. `MEMBER-003.02`, in which the `ticketId` is `MEMBER-003` and the `subTaskSeq` is `02`)
-- `repoName` — the second argument (e.g. `pickleball-club`)
+- `repoName` — the second argument (e.g. `pickleball-club`). If not specified, deduce it from the name of the folder which is the current folder (or its parent) that directly contains `.git/`
 
-If either argument is missing, stop and tell the user the correct usage.
+If `ticketId`/`taskId` is missing OR `repoName` is not specified nor can be deduced, stop and tell the user the correct usage.
 
 If the first argument is `ticketId` (e.g. `MEMBER-003`) not `taskId` (e.g. `MEMBER-003.02`), go to Stage 1 (with the `ticketId`); otherwise, go to Stage 2 (with the parsed `ticketId` and `taskId`).
 
@@ -64,49 +65,41 @@ REPO CONTEXT:
 
 Now wait for both agents to complete.
 * If dependency-analyzer returns Verdict: BLOCKED — print the full DA report, tell the user the pipeline has been halted, and stop.
-* Else-If requirement-analyzer output contains sub-tasks, prompt the user
-  """
-  Please review the spec and sub-tasks, and instruct the next step:
-  1. Implement all sub-tasks one by one.
-  2. Implement one sub-task (enter the two-digit sub-task sequence).
-  3. Pause for now.
-  """
 * Else, prompt the user
   """
   Please review the spec, and instruct the next step:
-  1. Implement the ticket.
+  1. Implement the ticket, grouping sub-tasks into phases.
   2. Pause for now.
 
 Wait for the user's reply. If the user select
-* Implement all sub-tasks one by one:
-  * Iterate each sub-task to run through the rest stages, supply the `ticketId` and `taskId` (derive from the `ticketId` and the sub-task sequence).
-* Implement one sub-task:
-  * Run through the rest stages for the specified sub-task, supply the `ticketId` and `taskId` (derive from the `ticketId` and the entered sub-task sequence).
-* Implement the ticket:
+* Implement the ticket, grouping sub-tasks into phases:
   * Run through the rest stages for the ticket, supply the `ticketId` and `taskId` (same as the `ticketId`).
 * Pause for now:
   * Do not proceed further.
 
 ---
 
-## Stage 2 - Create Task Branch
+## Stage 2 - Create Feature Branch
 
 Read spec from `docs/specs/<TICKET-ID>.md`.
 
-Create the task branch:
-```bash
-cd <repoPath from repoContext>
-git fetch origin
-git checkout <baseBranch>
-git pull origin <baseBranch>
-git checkout -b task/{{taskId}}-<short-description>
+Derive `<short-description>` from the ticket `summary`: lowercase, hyphen-separated, max 5 words.
+
+Store `task/{{taskId}}-<short-description>` as the `branchName`.
+
+Use `git-agent` with prompt:
 ```
+Create feature branch for {{ticketId}}
 
-Derive `<short-description>` from `taskSummary`: lowercase, hyphen-separated, max 5 words.
+BRANCH (the new branch to be created): {{branchName}}
+TASK ID: {{taskId}}
 
-Store the branch name as `branchName`. If the branch already exists, check it out instead of failing.
+SPEC:
+{{spec}}
 
-Print: `Branch created: {{branchName}}`
+REPO CONTEXT:
+{{repoContextGit}}
+```
 
 Extract `domainTags` from the `## Domain Tags` line in the spec (e.g. `frontend`, `backend`, `fullstack`).
 
@@ -316,10 +309,10 @@ Spawn `git-agent` AND `docs-agent` in parallel (two Agent tool calls in the same
 
 git-agent prompt:
 ```
-Commit the changes for {{taskId}}.
+Commit the changes for {{ticketId}}
 
 BRANCH (already created — do NOT create a new branch): {{branchName}}
-CHILD TASK ID (use for commit message): {{childTaskId}}
+TASK ID (use for commit message): {{taskId}}
 
 SPEC (for commit message context only — do not re-implement):
 {{spec}}
