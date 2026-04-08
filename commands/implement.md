@@ -85,7 +85,7 @@ Read spec from `docs/specs/<TICKET-ID>.md`.
 
 Derive `<short-description>` from the ticket `summary`: lowercase, hyphen-separated, max 5 words.
 
-Store `task/{{taskId}}-<short-description>` as the `branchName`.
+Store `feature/{{taskId}}.<short-description>` as the `branchName`.
 
 Use `git-agent` with prompt:
 ```

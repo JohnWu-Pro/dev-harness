@@ -64,7 +64,7 @@ Read the REPO CONTEXT to determine:
 
 Always run `git fetch origin` before branching to ensure the base is up to date.
 
-Generate the branch name using the `TASK-ID` and a short slug from the spec title. Example: `task/MEMBER-002.01.fix-save-button`.
+Generate the branch name using the `TASK-ID` and a short slug from the spec title. Example: `feature/MEMBER-002.01.fix-save-button`.
 
 ## Steps - Create feature branch for ticket
 
