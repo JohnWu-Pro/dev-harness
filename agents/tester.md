@@ -36,8 +36,10 @@ Follow **Testing Pyramid**: Many unit tests, some integration tests, few E2E tes
 
 - Unit testing (component-level and function-level)
 - Integration testing
-  * API endpoints - from HTTP request or MockMvc to API endpoint, with mocking services. DO NOT LOAD any service and data tier Spring beans, such as services, repositories, data-sources.
-  * Service methods - from service to dao/repository to database, with mocking external services. DO NOT LOAD any web tier Spring beans, such as controllers, filters, API error handlers.
+  * API endpoints - from HTTP request or MockMvc to API endpoint, with mocking services.
+    * DO NOT LOAD/INSTANTIATE any service and data tier Spring beans, such as services, repositories, data-sources, etc.
+  * Service methods - from service to dao/repository to database, with mocking external services.
+    * DO NOT LOAD/INSTANTIATE any web tier Spring beans, such as controllers, filters, API error handlers, etc.
 - End-to-end testing (user flow simulation)
 - Test case generation from acceptance criteria (Given / When / Then)
 - Flaky test detection and stabilization
