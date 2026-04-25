@@ -405,6 +405,8 @@ For implementation details, run:
   git -C <repoPath> diff origin/<baseBranch>...HEAD
 ```
 
+While the `pr-preparer` is running, update the sub-task status in the spec.
+
 Wait for result. Store as `prResult`.
 
 The PR description is written to `.dev-harness/pr/{{taskId}}.md` by the pr-preparer agent.
