@@ -43,13 +43,54 @@ When a section fits multiple slices, include it in each. Error on the side of in
 
 ## Stage 1 - Requirement Analyze and Dependency Check
 
-Fetch the ticket from `docs/tickets.md` with all fields.
+### Fetch the ticket
+
+Read the **Ticket source** and **Ticket lookup** fields from `repoContext` §1 Overview, then
+fetch the ticket for `ticketId`. The analyzer agents are Read/Write-only and cannot fetch it
+themselves — you fetch it once here and pass it to them.
+
+**If Ticket source is `GitHub Issues`:**
+```bash
+gh issue list -R <githubRemote> --state all --search "<ticketId> in:title" --json number,title,body,state,stateReason,labels --limit 5
+```
+Select the issue whose title starts with `<ticketId>: `. Ignore near-matches (`TECH-01` must not
+match `TECH-010`). If none match, stop and tell the user the ticket does not exist. If more than
+one matches exactly, stop and list them — do not guess.
+
+Store `issueNumber`. Derive `status` from the status label (`draft`, `defined`, `in-progress`,
+`completed`, `cancelled`); if no status label is present, fall back to issue state: open →
+`Defined`, closed/`COMPLETED` → `Completed`, closed/`NOT_PLANNED` → `Cancelled`.
+
+**If Ticket source is `Jira`:** fetch via the Jira MCP using `ticketId`.
+
+**If Ticket source is `file`:** read the ticket block from the path named in **Ticket lookup**.
+
+Store the ticket text (summary, status, description, tags, links, comments) as `ticket`.
+
+If `status` is already `Completed` or `Cancelled`, print a warning and ask the user whether to
+continue before spawning any agent.
+
+### Resolve linked tickets
+
+Extract every ticket ID appearing on a `Blocks:` / `Blocked-By:` / `Relates-To:` line in
+`ticket`. Look up each one's status the same way as above (title search, status label) and build
+`ticketLinks` as one line per link:
+
+```
+<TICKET-ID> — <status>
+```
+
+If the ticket has no links, set `ticketLinks` to `(none)`. Do not skip this step — the
+dependency-analyzer returns BLOCKED when it has `Blocked-By` links but no statuses to check.
 
 Spawn `requirement-analyzer` and `dependency-analyzer` in parallel (two Agent tool calls in the same response).
 
 requirement-analyzer prompt:
 ```
 Analyze {{ticketId}}.
+
+TICKET:
+{{ticket}}
 
 REPO CONTEXT:
 {{repoContext}}
@@ -58,6 +99,12 @@ REPO CONTEXT:
 dependency-analyzer prompt:
 ```
 Analyze dependencies for {{ticketId}}.
+
+TICKET:
+{{ticket}}
+
+LINKED TICKET STATUS:
+{{ticketLinks}}
 
 REPO CONTEXT:
 {{repoContextGit}}
@@ -102,6 +149,15 @@ REPO CONTEXT:
 ```
 
 Extract `domainTags` from the `## Domain Tags` line in the spec (e.g. `frontend`, `backend`, `fullstack`).
+
+Move the ticket to in-progress in the ticket source (status lives there, not in any repo file).
+For `GitHub Issues`:
+```bash
+gh issue edit <issueNumber> -R <githubRemote> --add-label in-progress --remove-label draft --remove-label defined
+```
+`--remove-label` on a label the issue does not carry is not an error. If the ticket was already
+`in-progress`, skip this. Report the transition in the Final Summary; never record status in a
+file in the repo.
 
 ---
 
@@ -420,6 +476,7 @@ Print:
 ```
 Pipeline complete for {{taskId}}.
 
+Ticket:          {{ticketId}} (#{{issueNumber}}) — now in-progress
 Branch:          (from gitResult)
 Commit:          (from gitResult)
 PR description:  .dev-harness/pr/{{taskId}}.md
@@ -429,4 +486,6 @@ Tests:           (PASSED / iterations used)
 Docs:            (summary from docsResult)
 
 Next step: Review the branch locally, then push and open a PR.
+             Put `Closes #{{issueNumber}}` in the PR body so the ticket closes on merge;
+             then swap the label: --add-label completed --remove-label in-progress.
 ```

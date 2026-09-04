@@ -17,6 +17,8 @@
 | **Domain** | frontend \| backend \| full-stack |
 | **Team / org** | |
 | **Primary Jira project key** | |
+| **Ticket source** | GitHub Issues \| Jira \| file |
+| **Ticket lookup** | |
 
 ---
 

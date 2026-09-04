@@ -35,11 +35,25 @@ You will receive a prompt in this format:
 ```
 Analyze dependencies for <TICKET-ID>
 
+TICKET:
+<the full ticket text, including its Links section>
+
+LINKED TICKET STATUS:
+<TICKET-ID> — <status> | (none)
+...
+
 REPO CONTEXT:
 <repo context>
 ```
 
-Fetch the ticket from `docs/tickets.md`.
+The ticket and the current status of every ticket it links to are supplied in the prompt —
+the orchestrator has already resolved them. Do not go looking for a ticket file; you have no
+Bash access and `docs/tickets.md` is an index, not the ticket text.
+
+Treat a linked ticket as resolved when its status is `Completed` or `Cancelled`. Any
+`Blocked-By` link in another status is a blocker. If LINKED TICKET STATUS is absent while the
+ticket has `Blocked-By` links, return `Verdict: BLOCKED` and say the blocker statuses could
+not be resolved — do not guess them.
 
 ## Output Format
 

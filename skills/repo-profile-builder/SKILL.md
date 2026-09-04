@@ -104,6 +104,8 @@ When you mark `[ CONFIRM ]`, add a short hint: `[ CONFIRM ]` — check `<file>`.
 | Domain | `backend` if only pom.xml; `frontend` if only package.json; `full-stack` if both |
 | Team / org | From GitHub remote URL (org portion) — mark `[ CONFIRM ]` for the team name |
 | Primary Jira project key | Look in recent commit messages for a pattern like `PROJ-1234` — extract the prefix. If none, mark `[ CONFIRM ]` |
+| Ticket source | `GitHub Issues` if `gh repo view --json hasIssuesEnabled` is true and the repo has issues; `Jira` if a Jira key was detected and issues are disabled; `file` if a ticket file such as `docs/tickets.md` holds the ticket bodies. If more than one looks plausible, pick the one carrying open tickets and mark `[ CONFIRM ]` |
+| Ticket lookup | The concrete command or path the orchestrator uses to fetch one ticket by ID. For `GitHub Issues`: `gh issue list -R <remote> --state all --search "<ID> in:title"`. For `file`: the file path. For `Jira`: `Jira MCP` |
 
 ### Section 2 — Tech Stack
 

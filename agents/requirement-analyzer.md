@@ -45,11 +45,19 @@ You will receive a prompt in this format:
 ```
 Analyze <TICKET-ID>
 
+TICKET:
+<the full ticket text: summary, status, description, tags, links, comments>
+
 REPO CONTEXT:
 <repo context>
 ```
 
-Fetch the full ticket from `docs/tickets.md` with fields: `summary`, `status`, `description`, `tags`, `links`, `comments`.
+The ticket is supplied in the prompt — the orchestrator has already fetched it from
+whatever ticket source the repo uses. Do not go looking for a ticket file; you have no
+Bash access and `docs/tickets.md` is an index, not the ticket text.
+
+If the TICKET block is missing or has no description, stop and report that the ticket
+could not be resolved, naming the `<TICKET-ID>` you were given.
 
 Use the REPO CONTEXT to understand what's relevant — e.g. for React/Spring Boot, frontend means React and backend means Java.
 
